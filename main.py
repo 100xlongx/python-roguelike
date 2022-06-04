@@ -43,8 +43,6 @@ def main() -> None:
 
     engine.update_fov()
 
-    
-
     with tcod.context.new_terminal(
         screen_width,
         screen_height,

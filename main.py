@@ -8,6 +8,9 @@ def main() -> None:
     screen_width = 80
     screen_height = 50
 
+    player_x = int(screen_width / 2)
+    player_y = int(screen_height / 2)
+
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
@@ -26,6 +29,8 @@ def main() -> None:
             root_console.print(x=1, y=1, string="@")
 
             context.present(root_console)
+
+            root_console.clear()
 
             for event in tcod.event.wait():
                 action = event_handler.dispatch(event)

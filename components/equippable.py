@@ -19,7 +19,6 @@ class Equippable(BaseComponent):
         defense_bonus: int = 0,
     ):
         self.equipment_type = equipment_type
-
         self.power_bonus = power_bonus
         self.defense_bonus = defense_bonus
 

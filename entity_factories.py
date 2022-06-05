@@ -1,8 +1,7 @@
+from components import consumable, equippable
 from components.ai import HostileEnemy
-from components import consumable
 from components.fighter import Fighter
 from components.inventory import Inventory
-from components import consumable, equippable
 from components.equipment import Equipment
 from components.level import Level
 from entity import Actor, Item

@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import copy
-from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
+from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union, List
+from components import trait
+from components.trait import Trait
 from render_order import RenderOrder
 import math
 
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
     from components.ai import BaseAI
     from components.consumable import Consumable
     from components.equipment import Equipment
-    from components.equipable import Equippable
+    from components.equippable import Equippable
     from components.fighter import Fighter
     from components.inventory import Inventory
     from game_map import GameMap
@@ -35,6 +37,7 @@ class Entity:
         name: str = "<Unnamed>",
         blocks_movement: bool = False,
         render_order: RenderOrder = RenderOrder.CORPSE,
+        traits: List[Trait] = []
     ):
         self.x = x
         self.y = y
@@ -43,6 +46,8 @@ class Entity:
         self.name = name
         self.blocks_movement = blocks_movement
         self.render_order = render_order
+        self.traits = traits
+
         if parent:
             # If parent isn't provided now then it will be set later.
             self.parent = parent
@@ -94,7 +99,8 @@ class Actor(Entity):
         equipment: Equipment,
         fighter: Fighter,
         inventory: Inventory,
-        level: Level
+        level: Level,
+        traits: List[Trait] = []
     ):
         super().__init__(
             x=x,
@@ -104,6 +110,7 @@ class Actor(Entity):
             name=name,
             blocks_movement=True,
             render_order=RenderOrder.ACTOR,
+            traits=traits
         )
 
         self.ai: Optional[BaseAI] = ai_cls(self)
@@ -136,6 +143,7 @@ class Item(Entity):
         name: str = "<Unnamed>",
         consumable: Optional[Consumable] = None,
         equippable: Optional[Equippable] = None,
+        traits: List[Trait] = []
     ):
         super().__init__(
             x=x,
@@ -145,6 +153,7 @@ class Item(Entity):
             name=name,
             blocks_movement=False,
             render_order=RenderOrder.ITEM,
+            traits=traits
         )
 
         self.consumable = consumable

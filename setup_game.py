@@ -8,6 +8,7 @@ import traceback
 import tcod
 import color
 import entity_factories
+import trait_factories
 import input_handlers
 
 from typing import Optional
@@ -58,6 +59,10 @@ def new_game() -> Engine:
 
     player.inventory.items.append(leather_armor)
     player.equipment.toggle_equip(leather_armor, add_message=False)
+
+    trait = copy.deepcopy(trait_factories)
+
+    player.traits.append()
     
     return engine
 

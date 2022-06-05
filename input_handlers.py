@@ -14,6 +14,7 @@ from actions import (
 
 import color
 import exceptions
+import os
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -383,9 +384,18 @@ class MainGameEventHandler(EventHandler):
         return action
 
 class GameOverEventHandler(EventHandler):
+    def on_quit(self) -> None:
+        """Handle exiting out of a finished game."""
+        if os.path.exists("savegame.sav"):
+            os.remove("savegame.sav")  # Deletes the active save file.
+        raise exceptions.QuitWithoutSaving()  # Avoid saving a finished game.
+
+    def ev_quit(self, event: tcod.event.Quit) -> None:
+        self.on_quit()
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
-            raise SystemExit()
+            self.on_quit()
 
 class HistoryViewer(EventHandler):
     """Print the history on a larger window which can be navigated."""
@@ -435,4 +445,5 @@ class HistoryViewer(EventHandler):
         elif event.sym == tcod.event.K_END:
             self.cursor = self.log_length - 1  # Move directly to the last message.
         else:  # Any other key moves back to the main game state.
-            self.engine.event_handler = MainGameEventHandler(self.engine)
+            return MainGameEventHandler(self.engine)
+        return None

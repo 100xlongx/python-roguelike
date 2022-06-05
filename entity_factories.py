@@ -31,6 +31,13 @@ troll = Actor(
     inventory=Inventory(capacity=0),
 )
 
+fireball_scroll = Item(
+    char="~",
+    color=(255, 0, 0),
+    name="Fireball Scroll",
+    consumable=consumable.FireballDamageConsumable(damage=12, radius=3),
+)
+
 confusion_scroll = Item(
     char="~",
     color=(207, 63, 255),

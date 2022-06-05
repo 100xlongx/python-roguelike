@@ -92,6 +92,9 @@ class GameMap:
             if self.visible[entity.x, entity.y]:
                 console.print(x=entity.x, y=entity.y, string=entity.char, fg=entity.color)
 
+
+
+
 class GameWorld:
     """
     Holds the settings for the GameMap, and generates new maps when moving down the stairs.
@@ -119,6 +122,32 @@ class GameWorld:
         self.room_max_size = room_max_size
 
         self.current_floor = current_floor
+
+    def change_map(self, map: GameMap) -> None:
+        self.engine.game_map = map
+
+class Dungeon(GameWorld):
+    def __init__(
+        self,
+        *,
+        engine: Engine,
+        map_width: int,
+        map_height: int,
+        max_rooms: int,
+        room_min_size: int,
+        room_max_size: int,
+        current_floor: int = 0
+    ):
+
+        super().__init__(
+            engine=engine,
+            map_width=map_width,
+            map_height=map_height,
+            max_rooms=max_rooms,
+            room_min_size=room_min_size,
+            room_max_size=room_max_size,
+            current_floor=current_floor
+        )
 
     def generate_floor(self) -> None:
         from procgen import generate_dungeon

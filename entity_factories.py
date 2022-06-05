@@ -1,5 +1,4 @@
 from components.ai import HostileEnemy
-from components.consumable import HealingConsumable
 from components import consumable
 from components.fighter import Fighter
 from components.inventory import Inventory
@@ -30,6 +29,13 @@ troll = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=16, defense=1, power=4),
     inventory=Inventory(capacity=0),
+)
+
+confusion_scroll = Item(
+    char="~",
+    color=(207, 63, 255),
+    name="Confusion Scroll",
+    consumable=consumable.ConfusionConsumable(number_of_turns=10),
 )
 
 health_potion = Item(

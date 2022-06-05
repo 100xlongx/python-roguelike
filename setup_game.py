@@ -60,10 +60,9 @@ def new_game() -> Engine:
     player.inventory.items.append(leather_armor)
     player.equipment.toggle_equip(leather_armor, add_message=False)
 
-    trait = copy.deepcopy(trait_factories)
+    trait = copy.deepcopy(trait_factories.brave)
+    player.mind.learn_skill(trait)
 
-    player.traits.append()
-    
     return engine
 
 def load_game(filename: str) -> Engine:

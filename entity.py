@@ -4,6 +4,7 @@ from __future__ import annotations
 import copy
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union, List
 from components import trait
+from components.mind import Mind
 from components.trait import Trait
 from render_order import RenderOrder
 import math
@@ -100,7 +101,7 @@ class Actor(Entity):
         fighter: Fighter,
         inventory: Inventory,
         level: Level,
-        traits: List[Trait] = []
+        mind: Mind
     ):
         super().__init__(
             x=x,
@@ -109,8 +110,7 @@ class Actor(Entity):
             color=color,
             name=name,
             blocks_movement=True,
-            render_order=RenderOrder.ACTOR,
-            traits=traits
+            render_order=RenderOrder.ACTOR
         )
 
         self.ai: Optional[BaseAI] = ai_cls(self)
@@ -127,6 +127,9 @@ class Actor(Entity):
         self.level = level
         self.level.parent = self
 
+        self.mind = mind
+        self.mind.parent = self
+
     @property
     def is_alive(self) -> bool:
         """Returns True as long as this actor can perform actions."""
@@ -142,8 +145,7 @@ class Item(Entity):
         color: Tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
         consumable: Optional[Consumable] = None,
-        equippable: Optional[Equippable] = None,
-        traits: List[Trait] = []
+        equippable: Optional[Equippable] = None
     ):
         super().__init__(
             x=x,
@@ -152,8 +154,7 @@ class Item(Entity):
             color=color,
             name=name,
             blocks_movement=False,
-            render_order=RenderOrder.ITEM,
-            traits=traits
+            render_order=RenderOrder.ITEM
         )
 
         self.consumable = consumable

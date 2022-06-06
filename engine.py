@@ -5,7 +5,7 @@ from tcod.context import Context
 from tcod.console import Console
 
 import exceptions
-from game_map import GameMap
+from game_map import Dungeon, GameMap
 from tcod.map import compute_fov
 from message_log import MessageLog
 import render_functions
@@ -69,4 +69,13 @@ class Engine:
         )
 
         render_functions.render_names_at_mouse_location(console=console, x=21, y=44, engine=self)
+
+    def enter_dungeon(self, dungeon: Dungeon):
+        self.game_world = dungeon
+
+        floor = dungeon.get_current_floor()
+
+        self.game_map = floor
+        self.player.place(*floor.upstairs_location, floor)
+
         

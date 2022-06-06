@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Iterable, Iterator, Optional, TYPE_CHECKING
+from typing import Iterable, Iterator, Optional, Tuple, List, TYPE_CHECKING
+from xmlrpc.client import Boolean
 import numpy as np  # type: ignore
 from tcod.console import Console
 
@@ -10,6 +11,7 @@ import tile_types
 if TYPE_CHECKING:
     from entity import Entity
     from engine import Engine
+    
 
 
 class GameMap:
@@ -26,8 +28,6 @@ class GameMap:
         self.explored = np.full(
             (width, height), fill_value=False, order="F"
         )  # Tiles the player has seen before
-
-        self.downstairs_location = (0, 0)
 
     @property
     def gamemap(self) -> GameMap:
@@ -104,27 +104,19 @@ class GameWorld:
         self,
         *,
         engine: Engine,
-        map_width: int,
-        map_height: int,
-        max_rooms: int,
-        room_min_size: int,
-        room_max_size: int,
-        current_floor: int = 0
     ):
         self.engine = engine
-
-        self.map_width = map_width
-        self.map_height = map_height
-
-        self.max_rooms = max_rooms
-
-        self.room_min_size = room_min_size
-        self.room_max_size = room_max_size
-
-        self.current_floor = current_floor
+        self.engine.game_world = self
 
     def change_map(self, map: GameMap) -> None:
         self.engine.game_map = map
+
+class Floor(GameMap):
+    def __init__(self, engine: Engine, width: int, height: int, entities: Iterable[Entity] = ()):
+        super().__init__(engine=engine, width=width, height=height, entities=entities)
+
+        self.downstairs_location = (0, 0)
+        self.upstairs_location : Tuple[int, int] = (0, 1)
 
 class Dungeon(GameWorld):
     def __init__(
@@ -136,29 +128,43 @@ class Dungeon(GameWorld):
         max_rooms: int,
         room_min_size: int,
         room_max_size: int,
-        current_floor: int = 0
+        current_floor: int = 0,
+        floors: List[Floor] = []
     ):
 
-        super().__init__(
-            engine=engine,
-            map_width=map_width,
-            map_height=map_height,
-            max_rooms=max_rooms,
-            room_min_size=room_min_size,
-            room_max_size=room_max_size,
-            current_floor=current_floor
-        )
+        super().__init__(engine=engine)
 
-    def generate_floor(self) -> None:
-        from procgen import generate_dungeon
+        self.map_width = map_width
+        self.map_height = map_height
+        self.max_rooms = max_rooms
+        self.room_min_size = room_min_size
+        self.room_max_size = room_max_size
+        self.current_floor = current_floor
+        self.floors = floors
 
-        self.current_floor += 1
+    def move_down_floor(self) -> None:
+        next_floor = self.current_floor + 1
 
-        self.engine.game_map = generate_dungeon(
-            max_rooms=self.max_rooms,
-            room_min_size=self.room_min_size,
-            room_max_size=self.room_max_size,
-            map_width=self.map_width,
-            map_height=self.map_height,
-            engine=self.engine,
-        )
+        floor = self.floors[next_floor]
+
+        if floor:
+            self.engine.game_map = floor
+
+    def get_current_floor(self) -> Floor:
+        floor = self.floors[self.current_floor]
+
+        return floor
+
+    
+    def generate_next_floor(self) -> None:
+        from procgen import generate_floor
+
+        self.floors.append(
+            generate_floor(
+                max_rooms=self.max_rooms,
+                room_min_size=self.room_min_size,
+                room_max_size=self.room_max_size,
+                map_width=self.map_width,
+                map_height=self.map_height,
+                engine=self.engine,
+        ))

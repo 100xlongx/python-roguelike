@@ -104,7 +104,7 @@ class RectangularRoom:
             and self.y1 <= other.y2
             and self.y2 >= other.y1
         )
-def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int,) -> None:
+def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int = 1) -> None:
     number_of_monsters = random.randint(
         0, get_max_value_for_floor(max_monsters_by_floor, floor_number)
     )
@@ -144,6 +144,46 @@ def tunnel_between(
         yield x, y
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
+
+def generate_overworld(engine: Engine, map_width: int, map_height: int) -> GameMap:
+    player = engine.player
+
+    overworld = GameMap(engine, map_width, map_height, entities=[player])
+
+    max_rooms = 2
+    room_min_size = 10
+    room_max_size = 15
+
+    rooms: List[RectangularRoom] = []
+
+    for r in range(max_rooms):
+        room_width = random.randint(room_min_size, room_max_size)
+        room_height = random.randint(room_min_size, room_max_size)
+        
+        x = random.randint(0, overworld.width - room_width - 1)
+        y = random.randint(0, overworld.height - room_height - 1)
+
+        new_room = RectangularRoom(x, y, room_width, room_height)
+
+        if any(new_room.intersects(other_room) for other_room in rooms):
+            continue
+
+        overworld.tiles[new_room.inner] = tile_types.floor
+
+        if len(rooms) == 0:
+            # The first room, where the player starts.
+            player.place(*new_room.center, overworld)
+        else:  # All rooms after the first.
+            # Dig out a tunnel between this room and the previous one.
+            for x, y in tunnel_between(rooms[-1].center, new_room.center):
+                overworld.tiles[x, y] = tile_types.floor
+
+        place_entities(new_room, overworld)
+
+        rooms.append(new_room)
+
+
+    return overworld
 
 def generate_dungeon(
     max_rooms: int,

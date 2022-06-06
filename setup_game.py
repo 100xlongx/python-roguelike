@@ -13,6 +13,7 @@ import input_handlers
 from typing import Optional
 from engine import Engine
 from game_map import Dungeon, GameWorld
+from procgen import generate_overworld
 
 # Load the background image and remove the alpha channel.
 background_image = tcod.image.load("assets/menu_background.png")[:, :, :3]
@@ -31,16 +32,12 @@ def new_game() -> Engine:
 
     engine = Engine(player=player)
 
-    engine.game_world = Dungeon(
-        engine=engine,
-        max_rooms=max_rooms,
-        room_min_size=room_min_size,
-        room_max_size=room_max_size,
-        map_width=map_width,
-        map_height=map_height
+    engine.game_world = GameWorld(
+        engine=engine
     )
 
-    engine.game_world.generate_floor()
+    engine.game_world.change_map(generate_overworld(engine=engine, map_height=map_height, map_width=map_width))
+
     engine.update_fov()
 
     engine.message_log.add_message(

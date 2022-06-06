@@ -154,11 +154,7 @@ class MeleeAction(ActionWithDirection):
 
             target.fighter.hp -= damage
         else:
-            self.engine.message_log.add_message(
-                f"{attack_desc} but does no damage.", attack_color
-            )
-
-        print(f"You kick the {target.name}, much to its annoyance!")
+            self.engine.message_log.add_message(f"{attack_desc} but does no damage.", attack_color)   
 
 class MovementAction(ActionWithDirection):
    def perform(self) -> None:

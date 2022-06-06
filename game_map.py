@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Iterator, Optional, TYPE_CHECKING
+from typing import Iterable, Iterator, Optional, TYPE_CHECKING, Tuple
 import numpy as np  # type: ignore
 from tcod.console import Console
 
@@ -27,7 +27,8 @@ class GameMap:
             (width, height), fill_value=False, order="F"
         )  # Tiles the player has seen before
 
-        self.downstairs_location = (0, 0)
+        self.downstairs_location: Tuple[int, int] = (0, 0)
+        self.upstairs_location: Optional[Tuple[int, int]]
 
     @property
     def gamemap(self) -> GameMap:

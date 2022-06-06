@@ -157,9 +157,10 @@ def generate_dungeon(
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
-    center_of_last_room = (0, 0)
-
     rooms: List[RectangularRoom] = []
+    center_of_last_room = (0, 0)
+    
+    entrance: Tuple[int, int] = (0, 0)
 
     for r in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
@@ -182,17 +183,21 @@ def generate_dungeon(
         if len(rooms) == 0:
             # The first room, where the player starts.
             player.place(*new_room.center, dungeon)
+            entrance = new_room.center
         else:  # All rooms after the first.
             # Dig out a tunnel between this room and the previous one.
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
 
-            center_of_last_room = (0, 0)
+            center_of_last_room = new_room.center
 
         place_entities(new_room, dungeon, engine.game_world.current_floor)
 
         dungeon.tiles[center_of_last_room] = tile_types.down_stairs
         dungeon.downstairs_location = center_of_last_room
+
+        dungeon.tiles[entrance] = tile_types.up_stairs
+        dungeon.upstairs_location = entrance
         
         # Finally, append the new room to the list.
         rooms.append(new_room)

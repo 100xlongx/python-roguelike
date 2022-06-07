@@ -157,12 +157,9 @@ class MeleeAction(ActionWithDirection):
             self.engine.message_log.add_message(
                 f"{attack_desc} but does no damage.", attack_color
             )
-
-        print(f"You kick the {target.name}, much to its annoyance!")
-
 class MovementAction(ActionWithDirection):
    def perform(self) -> None:
-        dest_x, dest_y = self.dest_xy
+        dest_x, dest_y = self.dest_xy 
 
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
             # Destination is out of bounds.
